@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -103,12 +104,15 @@ fun BloodPressureScreen(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
     var systolicText by remember { mutableStateOf("") }
     var diastolicText by remember { mutableStateOf("") }
+    var pulseText by remember { mutableStateOf("") }
 
     val systolic = systolicText.toIntOrNull()
     val diastolic = diastolicText.toIntOrNull()
-    val isValid = systolic != null && diastolic != null
+    val pulse = pulseText.toIntOrNull()
+    val isValid = systolic != null && diastolic != null && (pulseText.isEmpty() || pulse != null)
 
     Column(
         modifier = modifier
@@ -146,6 +150,17 @@ fun BloodPressureScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = pulseText,
+            onValueChange = { pulseText = it.filter { c -> c.isDigit() } },
+            label = { Text("Pulse (bpm)") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
@@ -154,12 +169,15 @@ fun BloodPressureScreen(
                     val record = BloodPressureRecord(
                         systolic = systolic!!,
                         diastolic = diastolic!!,
+                        pulse = pulse ?: 0,
                         timestamp = System.currentTimeMillis()
                     )
                     scope.launch {
                         dao.insert(record)
                         systolicText = ""
                         diastolicText = ""
+                        pulseText = ""
+                        focusManager.clearFocus()
                         snackbarHostState.showSnackbar("Reading saved")
                     }
                 }

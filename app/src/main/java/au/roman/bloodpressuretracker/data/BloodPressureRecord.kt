@@ -8,5 +8,6 @@ data class BloodPressureRecord(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val systolic: Int,
     val diastolic: Int,
+    val pulse: Int,
     val timestamp: Long
 )
