@@ -2,7 +2,7 @@
 
 An Android app for manually recording blood pressure readings with timestamps, viewing history, and exporting data for sharing with healthcare providers.
 
-THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY OF ANDROID STUDIO RUNNING ON A WINDOWS PC. USE CLAUDE CODE TO MAKE AND CHANGES OF HELP WITH GETTING IT TO RUN ON YOUR PHONE.
+THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY OF ANDROID STUDIO RUNNING ON A WINDOWS PC. USE CLAUDE CODE TO MAKE ANY CHANGES OR TO GET HELP TO RUN IT ON YOUR PHONE.
 
 ## Screens
 
@@ -25,18 +25,19 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 Two export options are available at the bottom of the History screen, both shared via Android's share sheet:
 
 ### Export (Standard CSV)
-One record per row with headers:
+One record per row, oldest first, with headers:
 ```
 Date/Time,Systolic (mmHg),Diastolic (mmHg),Pulse (bpm)
-2026-03-26 14:30:00,120,80,72
+2026-03-25 18:00:00,130,85,68
 2026-03-26 08:15:00,118,78,NA
+2026-03-26 14:30:00,120,80,72
 ```
 
 ### Report (Grouped CSV)
-Records grouped by date, up to 3 per row, with aligned columns for readability:
+Records grouped by date, oldest first, up to 3 per row, with aligned columns for readability:
 ```
-26 Mar 2026," 2:30pm 120 / 80 / 72"," 8:15am 118 / 78",
 25 Mar 2026," 6:00pm 130 / 85 / 68",,
+26 Mar 2026," 8:15am 118 / 78"," 2:30pm 120 / 80 / 72",
 ```
 
 ## Tech Stack

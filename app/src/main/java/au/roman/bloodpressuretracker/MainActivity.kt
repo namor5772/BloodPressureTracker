@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -35,6 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import au.roman.bloodpressuretracker.data.AppDatabase
@@ -186,5 +189,26 @@ fun BloodPressureScreen(
         ) {
             Text("Save")
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.alpha(0.15f)
+        ) {
+            Icon(
+                imageVector = Icons.Default.FavoriteBorder,
+                contentDescription = null,
+                tint = Color.Red,
+                modifier = Modifier.height(96.dp).fillMaxWidth()
+            )
+            Text(
+                text = "Stay Healthy",
+                fontSize = 14.sp,
+                color = Color.Red
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }

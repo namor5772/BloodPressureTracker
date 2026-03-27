@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Blood Pressure Tracker — an Android app for manually recording blood pressure readings with timestamps and generating reports. Currently in early development (scaffolded from Android Studio template, no application logic yet).
+Blood Pressure Tracker — an Android app for manually recording blood pressure readings (systolic, diastolic, pulse) with timestamps, viewing history, deleting records, and exporting data as CSV or grouped report via Android's share sheet. Exports are ordered oldest first.
 
 ## Build & Test Commands
 

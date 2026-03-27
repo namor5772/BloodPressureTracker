@@ -49,7 +49,7 @@ private val reportTimeFormatter = DateTimeFormatter.ofPattern("h:mma")
 private fun exportCsv(context: Context, records: List<BloodPressureRecord>) {
     val csv = buildString {
         appendLine("Date/Time,Systolic (mmHg),Diastolic (mmHg),Pulse (bpm)")
-        for (record in records) {
+        for (record in records.reversed()) {
             val dateTime = Instant.ofEpochMilli(record.timestamp)
                 .atZone(ZoneId.systemDefault())
                 .format(csvDateFormatter)
@@ -87,7 +87,7 @@ private fun exportGroupedCsv(context: Context, records: List<BloodPressureRecord
     }
 
     val csv = buildString {
-        val grouped = records.groupBy { record ->
+        val grouped = records.reversed().groupBy { record ->
             Instant.ofEpochMilli(record.timestamp).atZone(zone).toLocalDate()
         }
 
