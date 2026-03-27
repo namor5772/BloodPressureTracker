@@ -15,6 +15,7 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 - Pulse can be left blank (stored as 0)
 - Fields clear and keyboard dismisses after saving
 - Snackbar confirms each saved reading
+- Subtle heart graphic with "Stay Healthy" message below the form
 
 ### History Screen
 <img src="screenshots/Screenshot_20260327_171912.png" alt="History Screen" width="300">
