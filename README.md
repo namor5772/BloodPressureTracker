@@ -7,7 +7,7 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 ## Screens
 
 ### Record Screen
-![Record Screen](screenshots/Screenshot_20260327_171708.png)
+<img src="screenshots/Screenshot_20260327_171708.png" alt="Record Screen" width="300">
 
 - Enter **systolic** (mmHg), **diastolic** (mmHg), and optionally **pulse** (bpm)
 - Numeric-only keyboard input with digit filtering
@@ -17,7 +17,7 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 - Snackbar confirms each saved reading
 
 ### History Screen
-![History Screen](screenshots/Screenshot_20260327_171912.png)
+<img src="screenshots/Screenshot_20260327_171912.png" alt="History Screen" width="300">
 
 - Scrollable list of all readings, newest first
 - Each card displays formatted date/time, blood pressure (e.g. "120 / 80 mmHg"), and pulse (or "NA" if not recorded)
