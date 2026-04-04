@@ -50,6 +50,7 @@ private val dateFormatter = DateTimeFormatter.ofPattern("d MMM yyyy, h:mm a")
 private val csvDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 private val reportDateFormatter = DateTimeFormatter.ofPattern("d MMM yyyy")
 private val reportTimeFormatter = DateTimeFormatter.ofPattern("h:mma")
+private val averagesDateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
 
 private fun exportCsv(context: Context, records: List<BloodPressureRecord>) {
     val csv = buildString {
@@ -137,8 +138,8 @@ private fun exportAveragesCsv(context: Context, records: List<BloodPressureRecor
             val avgDia = dayRecords.map { it.diastolic }.average()
             val pulseRecords = dayRecords.filter { it.pulse > 0 }
             val avgPulse = if (pulseRecords.isNotEmpty()) pulseRecords.map { it.pulse }.average() else null
-            val pulseStr = if (avgPulse != null) "%.0f".format(avgPulse) else "NA"
-            appendLine("${date.format(reportDateFormatter)},${"%.0f".format(avgSys)},${"%.0f".format(avgDia)},$pulseStr")
+            val pulseStr = if (avgPulse != null) "%.1f".format(avgPulse) else "NA"
+            appendLine("${date.format(averagesDateFormatter)},${"%.1f".format(avgSys)},${"%.1f".format(avgDia)},$pulseStr")
         }
     }
 
@@ -309,7 +310,8 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
@@ -324,11 +326,19 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
                 ) {
                     Text("Report")
                 }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Button(
                     onClick = { exportAveragesCsv(context, records) },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Averages")
+                    Text("Daily Averages")
                 }
                 Button(
                     onClick = { filePickerLauncher.launch("text/*") },
