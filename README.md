@@ -27,7 +27,7 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 
 ## Data Export & Import
 
-Three options are available at the bottom of the History screen:
+Four options are available at the bottom of the History screen:
 
 ### Export (Standard CSV)
 One record per row, oldest first, with headers:
@@ -44,6 +44,15 @@ Records grouped by date, oldest first, up to 3 per row, with aligned columns for
 25 Mar 2026," 6:00pm 130 / 85 / 68",,
 26 Mar 2026," 8:15am 118 / 78"," 2:30pm 120 / 80 / 72",
 ```
+
+### Averages (Daily Average CSV)
+One row per date with averaged values, oldest first:
+```
+Date,Systolic (mmHg),Diastolic (mmHg),Pulse (bpm)
+25 Mar 2026,130,85,68
+26 Mar 2026,119,79,72
+```
+Pulse shows "NA" if no readings for that date had a pulse recorded.
 
 ### Import (CSV)
 Import a previously exported CSV file to restore or transfer readings. Opens a file picker for `text/*` files. Parses the standard CSV format (with headers) and **replaces all existing records** with the imported data after a confirmation dialog. The Import button is available even when the history is empty.

@@ -125,6 +125,40 @@ private fun exportGroupedCsv(context: Context, records: List<BloodPressureRecord
     context.startActivity(Intent.createChooser(intent, "Export Blood Pressure Report"))
 }
 
+private fun exportAveragesCsv(context: Context, records: List<BloodPressureRecord>) {
+    val zone = ZoneId.systemDefault()
+    val csv = buildString {
+        appendLine("Date,Systolic (mmHg),Diastolic (mmHg),Pulse (bpm)")
+        val grouped = records.reversed().groupBy { record ->
+            Instant.ofEpochMilli(record.timestamp).atZone(zone).toLocalDate()
+        }
+        for ((date, dayRecords) in grouped) {
+            val avgSys = dayRecords.map { it.systolic }.average()
+            val avgDia = dayRecords.map { it.diastolic }.average()
+            val pulseRecords = dayRecords.filter { it.pulse > 0 }
+            val avgPulse = if (pulseRecords.isNotEmpty()) pulseRecords.map { it.pulse }.average() else null
+            val pulseStr = if (avgPulse != null) "%.0f".format(avgPulse) else "NA"
+            appendLine("${date.format(reportDateFormatter)},${"%.0f".format(avgSys)},${"%.0f".format(avgDia)},$pulseStr")
+        }
+    }
+
+    val file = File(context.cacheDir, "blood_pressure_averages.csv")
+    file.writeText(csv)
+
+    val uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        file
+    )
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/csv"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    context.startActivity(Intent.createChooser(intent, "Export Blood Pressure Averages"))
+}
+
 private fun parseCsv(inputStream: InputStream): List<BloodPressureRecord> {
     val records = mutableListOf<BloodPressureRecord>()
     val lines = inputStream.bufferedReader().readLines()
@@ -289,6 +323,12 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Report")
+                }
+                Button(
+                    onClick = { exportAveragesCsv(context, records) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Averages")
                 }
                 Button(
                     onClick = { filePickerLauncher.launch("text/*") },
