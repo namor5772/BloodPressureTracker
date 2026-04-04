@@ -25,9 +25,9 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 - Tap any record to delete it (with confirmation dialog)
 - Empty state shown when no records exist
 
-## Data Export
+## Data Export & Import
 
-Two export options are available at the bottom of the History screen, both shared via Android's share sheet:
+Three options are available at the bottom of the History screen:
 
 ### Export (Standard CSV)
 One record per row, oldest first, with headers:
@@ -44,6 +44,9 @@ Records grouped by date, oldest first, up to 3 per row, with aligned columns for
 25 Mar 2026," 6:00pm 130 / 85 / 68",,
 26 Mar 2026," 8:15am 118 / 78"," 2:30pm 120 / 80 / 72",
 ```
+
+### Import (CSV)
+Import a previously exported CSV file to restore or transfer readings. Opens a file picker for `text/*` files. Parses the standard CSV format (with headers) and **replaces all existing records** with the imported data after a confirmation dialog. The Import button is available even when the history is empty.
 
 ## Tech Stack
 

@@ -2,6 +2,9 @@ package au.roman.bloodpressuretracker
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +40,9 @@ import au.roman.bloodpressuretracker.data.BloodPressureDao
 import au.roman.bloodpressuretracker.data.BloodPressureRecord
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.InputStream
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -120,12 +125,70 @@ private fun exportGroupedCsv(context: Context, records: List<BloodPressureRecord
     context.startActivity(Intent.createChooser(intent, "Export Blood Pressure Report"))
 }
 
+private fun parseCsv(inputStream: InputStream): List<BloodPressureRecord> {
+    val records = mutableListOf<BloodPressureRecord>()
+    val lines = inputStream.bufferedReader().readLines()
+    for (line in lines.drop(1)) { // skip header
+        val trimmed = line.trim()
+        if (trimmed.isEmpty()) continue
+        val parts = trimmed.split(",")
+        if (parts.size < 3) continue
+        val dateTime = LocalDateTime.parse(parts[0].trim(), csvDateFormatter)
+        val timestamp = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val systolic = parts[1].trim().toIntOrNull() ?: continue
+        val diastolic = parts[2].trim().toIntOrNull() ?: continue
+        val pulse = if (parts.size > 3) parts[3].trim().toIntOrNull() ?: 0 else 0
+        records.add(BloodPressureRecord(systolic = systolic, diastolic = diastolic, pulse = pulse, timestamp = timestamp))
+    }
+    return records
+}
+
 @Composable
 fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
     val records by dao.getAll().collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var recordToDelete by remember { mutableStateOf<BloodPressureRecord?>(null) }
+    var importUri by remember { mutableStateOf<Uri?>(null) }
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            importUri = uri
+        }
+    }
+
+    if (importUri != null) {
+        AlertDialog(
+            onDismissRequest = { importUri = null },
+            title = { Text("Import CSV") },
+            text = { Text("This will replace all existing records with the imported data. Continue?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    val uri = importUri!!
+                    importUri = null
+                    scope.launch {
+                        val inputStream = context.contentResolver.openInputStream(uri)
+                        if (inputStream != null) {
+                            val parsed = parseCsv(inputStream)
+                            inputStream.close()
+                            if (parsed.isNotEmpty()) {
+                                dao.replaceAll(parsed)
+                            }
+                        }
+                    }
+                }) {
+                    Text("Import")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { importUri = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     if (recordToDelete != null) {
         AlertDialog(
@@ -151,14 +214,26 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
     }
 
     if (records.isEmpty()) {
-        Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "No records yet",
-                style = MaterialTheme.typography.bodyLarge
-            )
+        Column(modifier = modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No records yet",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(onClick = { filePickerLauncher.launch("text/*") }) {
+                    Text("Import")
+                }
+            }
         }
     } else {
         Column(modifier = modifier.fillMaxSize()) {
@@ -214,6 +289,12 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Report")
+                }
+                Button(
+                    onClick = { filePickerLauncher.launch("text/*") },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Import")
                 }
             }
         }
