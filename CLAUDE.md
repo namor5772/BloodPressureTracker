@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Blood Pressure Tracker — an Android app for manually recording blood pressure readings (systolic, diastolic, pulse) with timestamps, viewing history, deleting records, exporting data as CSV, grouped report, or daily averages via Android's share sheet, and importing CSV files to restore/transfer readings. Exports are ordered oldest first.
+Blood Pressure Tracker — an Android app for manually recording blood pressure readings (systolic, diastolic, pulse) with timestamps, viewing history, deleting records, exporting data as CSV, grouped report, or daily averages via Android's share sheet, importing CSV files to restore/transfer readings, and AI-powered reading explanations via the Anthropic API (Claude Haiku 4.5). Exports are ordered oldest first.
 
 ## Build & Test Commands
 
@@ -36,6 +36,7 @@ Blood Pressure Tracker — an Android app for manually recording blood pressure 
 - **Package**: `au.roman.bloodpressuretracker`
 - **Min/Target SDK**: 36 | **JVM Target**: Java 11
 - **Gradle**: 9.1.0 with Kotlin 2.0.21, AGP 9.0.1
+- **AI**: Anthropic Messages API via `HttpURLConnection` + `org.json` (no external dependencies)
 - **Dependency management**: Version catalog (`gradle/libs.versions.toml`)
 
 ## Key Paths

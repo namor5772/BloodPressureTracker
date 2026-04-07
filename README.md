@@ -22,7 +22,10 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 
 - Scrollable list of all readings, newest first
 - Each card displays formatted date/time, blood pressure (e.g. "120 / 80 mmHg"), and pulse (or "NA" if not recorded)
-- Tap any record to delete it (with confirmation dialog)
+- Tap any record to open action menu: **Explain** or **Delete**
+- **Explain this reading** sends the reading to the Anthropic API (Claude Haiku 4.5) for a plain-language explanation with AHA/ACC blood pressure categorisation and heart rate context
+- Delete with confirmation dialog
+- Gear icon (top-right) to enter your Anthropic API key (stored locally on device)
 - Empty state shown when no records exist
 
 ## Data Export & Import
@@ -63,6 +66,7 @@ Import a previously exported CSV file to restore or transfer readings. Opens a f
 |-----------|-----------|
 | Language | Kotlin 2.0.21 |
 | UI | Jetpack Compose, Material Design 3 |
+| AI | Anthropic API (Claude Haiku 4.5) |
 | Database | Room 2.7.1 (SQLite) |
 | Architecture | Single Activity, state-based navigation |
 | Min SDK | 36 |

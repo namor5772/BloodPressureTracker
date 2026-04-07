@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,13 +19,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +58,13 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+
+private sealed interface ExplanationState {
+    data object Idle : ExplanationState
+    data object Loading : ExplanationState
+    data class Success(val text: String) : ExplanationState
+    data class Error(val message: String) : ExplanationState
+}
 
 private val dateFormatter = DateTimeFormatter.ofPattern("d MMM yyyy, h:mm a")
 private val csvDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -178,12 +198,16 @@ private fun parseCsv(inputStream: InputStream): List<BloodPressureRecord> {
     return records
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
     val records by dao.getAll().collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var recordToDelete by remember { mutableStateOf<BloodPressureRecord?>(null) }
+    var selectedRecord by remember { mutableStateOf<BloodPressureRecord?>(null) }
+    var explanationRecord by remember { mutableStateOf<BloodPressureRecord?>(null) }
+    var explanationState by remember { mutableStateOf<ExplanationState>(ExplanationState.Idle) }
     var importUri by remember { mutableStateOf<Uri?>(null) }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
@@ -220,6 +244,119 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
             dismissButton = {
                 TextButton(onClick = { importUri = null }) {
                     Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // Bottom sheet for card actions
+    if (selectedRecord != null) {
+        val record = selectedRecord!!
+        ModalBottomSheet(
+            onDismissRequest = { selectedRecord = null },
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(modifier = Modifier.padding(bottom = 32.dp)) {
+                Text(
+                    text = "${record.systolic} / ${record.diastolic} mmHg",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                ListItem(
+                    headlineContent = { Text("Explain this reading") },
+                    leadingContent = { Icon(Icons.Default.Info, contentDescription = null) },
+                    modifier = Modifier.clickable {
+                        val r = selectedRecord
+                        selectedRecord = null
+                        explanationRecord = r
+                    }
+                )
+                ListItem(
+                    headlineContent = { Text("Delete") },
+                    leadingContent = { Icon(Icons.Default.Delete, contentDescription = null) },
+                    modifier = Modifier.clickable {
+                        val r = selectedRecord
+                        selectedRecord = null
+                        recordToDelete = r
+                    }
+                )
+            }
+        }
+    }
+
+    // Explanation API call
+    LaunchedEffect(explanationRecord) {
+        val record = explanationRecord ?: return@LaunchedEffect
+        val apiKey = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+            .getString("anthropic_api_key", null)
+        if (apiKey.isNullOrBlank()) {
+            explanationState = ExplanationState.Error("No API key set.\nTap the gear icon on the Record screen to add your Anthropic API key.")
+            return@LaunchedEffect
+        }
+        explanationState = ExplanationState.Loading
+        val result = getBloodPressureExplanation(apiKey, record.systolic, record.diastolic, record.pulse)
+        explanationState = result.fold(
+            onSuccess = { ExplanationState.Success(it) },
+            onFailure = { ExplanationState.Error(it.message ?: "Unknown error") }
+        )
+    }
+
+    // Explanation dialog
+    if (explanationState !is ExplanationState.Idle) {
+        AlertDialog(
+            onDismissRequest = {
+                explanationState = ExplanationState.Idle
+                explanationRecord = null
+            },
+            title = {
+                Text(
+                    when (explanationState) {
+                        is ExplanationState.Loading -> "Analysing..."
+                        is ExplanationState.Success -> "Reading Explanation"
+                        is ExplanationState.Error -> "Error"
+                        else -> ""
+                    }
+                )
+            },
+            text = {
+                when (val state = explanationState) {
+                    is ExplanationState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    is ExplanationState.Success -> {
+                        Text(
+                            text = state.text,
+                            modifier = Modifier.verticalScroll(rememberScrollState())
+                        )
+                    }
+                    is ExplanationState.Error -> {
+                        Text(text = state.message)
+                    }
+                    else -> {}
+                }
+            },
+            confirmButton = {
+                if (explanationState !is ExplanationState.Loading) {
+                    TextButton(onClick = {
+                        explanationState = ExplanationState.Idle
+                        explanationRecord = null
+                    }) { Text("OK") }
+                }
+            },
+            dismissButton = {
+                if (explanationState is ExplanationState.Error) {
+                    TextButton(onClick = {
+                        // Re-trigger by setting a new instance
+                        val record = explanationRecord
+                        explanationRecord = null
+                        explanationState = ExplanationState.Idle
+                        explanationRecord = record
+                    }) { Text("Retry") }
                 }
             }
         )
@@ -282,7 +419,7 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
             ) {
                 items(records) { record ->
                     Card(
-                        onClick = { recordToDelete = record },
+                        onClick = { selectedRecord = record },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
