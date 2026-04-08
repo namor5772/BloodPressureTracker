@@ -7,6 +7,8 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 ## Screens
 
 ### Record Screen
+![Record Screen](screenshots/Screenshot_20260327_171708.png)
+
 <img src="screenshots/Screenshot_20260327_171708.png" alt="Record Screen" width="300">
 
 - Enter **systolic** (mmHg), **diastolic** (mmHg), and optionally **pulse** (bpm)
@@ -64,13 +66,13 @@ Import a previously exported CSV file to restore or transfer readings. Opens a f
 
 | Component | Technology |
 |-----------|-----------|
-| Language | Kotlin 2.0.21 |
+| Language | Kotlin 2.2.10 |
 | UI | Jetpack Compose, Material Design 3 |
 | AI | Anthropic API (Claude Haiku 4.5) |
 | Database | Room 2.7.1 (SQLite) |
 | Architecture | Single Activity, state-based navigation |
 | Min SDK | 36 |
-| Build | Gradle 9.1.0, AGP 9.0.1 |
+| Build | Gradle 9.3.1, AGP 9.1.0 |
 
 ## Building
 
