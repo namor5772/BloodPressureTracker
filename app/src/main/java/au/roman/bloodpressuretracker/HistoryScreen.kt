@@ -47,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import au.roman.bloodpressuretracker.data.BloodPressureDao
@@ -403,7 +404,7 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(onClick = { filePickerLauncher.launch("text/*") }) {
-                    Text("Import")
+                    Text("Import", color = Color.Red)
                 }
             }
         }
@@ -481,7 +482,7 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
                     onClick = { filePickerLauncher.launch("text/*") },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Import")
+                    Text("Import", color = Color.Red)
                 }
             }
         }

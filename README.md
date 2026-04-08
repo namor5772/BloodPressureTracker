@@ -7,9 +7,7 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 ## Screens
 
 ### Record Screen
-![Record Screen](screenshots/Screenshot_20260327_171708.png)
-
-<img src="screenshots/Screenshot_20260327_171708.png" alt="Record Screen" width="300">
+<img src="screenshots/Screenshot_20260408_111835.png" alt="Record Screen" width="300">
 
 - Enter **systolic** (mmHg), **diastolic** (mmHg), and optionally **pulse** (bpm)
 - Numeric-only keyboard input with digit filtering
@@ -20,7 +18,7 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 - Subtle heart graphic with "Stay Healthy" message below the form
 
 ### History Screen
-<img src="screenshots/Screenshot_20260327_171912.png" alt="History Screen" width="300">
+<img src="screenshots/Screenshot_20260408_112014.png" alt="History Screen" width="300">
 
 - Scrollable list of all readings, newest first
 - Each card displays formatted date/time, blood pressure (e.g. "120 / 80 mmHg"), and pulse (or "NA" if not recorded)
