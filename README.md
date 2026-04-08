@@ -21,12 +21,20 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 <img src="screenshots/Screenshot_20260408_112014.png" alt="History Screen" width="300">
 
 - Scrollable list of all readings, newest first
-- Each card displays formatted date/time, blood pressure (e.g. "120 / 80 mmHg"), and pulse (or "NA" if not recorded)
+- Each card displays formatted date/time and blood pressure with pulse on one line (e.g. "120 / 80 mmHg, 72 bpm")
 - Tap any record to open action menu: **Explain** or **Delete**
 - **Explain this reading** sends the reading to the Anthropic API (Claude Haiku 4.5) for a plain-language explanation with AHA/ACC blood pressure categorisation and heart rate context
 - Delete with confirmation dialog
 - Gear icon (top-right) to enter your Anthropic API key (stored locally on device)
 - Empty state shown when no records exist
+
+### Daily Averages Screen
+
+- Accessed via the **Daily Averages** button on the History screen (also triggers a CSV export via share sheet)
+- Displays computed daily averages in a scrollable list, most recent date first
+- Each card shows date (left) and reading count (right) on the top row, with averaged blood pressure and pulse on one line (e.g. "145.3 / 89.5 mmHg, 72.0 bpm")
+- Tap any daily average to get an **AI-powered explanation** via the Anthropic API, with a prompt adapted for daily averages
+- Back arrow returns to the History screen; History tab stays highlighted
 
 ## Data Export & Import
 

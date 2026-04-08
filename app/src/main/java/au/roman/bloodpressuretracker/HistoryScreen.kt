@@ -60,7 +60,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-private sealed interface ExplanationState {
+sealed interface ExplanationState {
     data object Idle : ExplanationState
     data object Loading : ExplanationState
     data class Success(val text: String) : ExplanationState
@@ -201,7 +201,7 @@ private fun parseCsv(inputStream: InputStream): List<BloodPressureRecord> {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
+fun HistoryScreen(dao: BloodPressureDao, onNavigateToDailyAverages: () -> Unit = {}, modifier: Modifier = Modifier) {
     val records by dao.getAll().collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -433,12 +433,9 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
                                 style = MaterialTheme.typography.labelMedium
                             )
                             Text(
-                                text = "${record.systolic} / ${record.diastolic} mmHg",
+                                text = "${record.systolic} / ${record.diastolic} mmHg" +
+                                    if (record.pulse > 0) ", ${record.pulse} bpm" else "",
                                 style = MaterialTheme.typography.headlineSmall
-                            )
-                            Text(
-                                text = if (record.pulse > 0) "Pulse: ${record.pulse} bpm" else "Pulse: NA",
-                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                     }
@@ -473,7 +470,10 @@ fun HistoryScreen(dao: BloodPressureDao, modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = { exportAveragesCsv(context, records) },
+                    onClick = {
+                        exportAveragesCsv(context, records)
+                        onNavigateToDailyAverages()
+                    },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Daily Averages")

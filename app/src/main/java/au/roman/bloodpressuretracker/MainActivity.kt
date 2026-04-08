@@ -84,7 +84,7 @@ fun MainApp() {
                     label = { Text("Record") }
                 )
                 NavigationBarItem(
-                    selected = currentScreen == Screen.History,
+                    selected = currentScreen == Screen.History || currentScreen == Screen.DailyAverages,
                     onClick = { currentScreen = Screen.History },
                     icon = { Icon(Icons.Default.DateRange, contentDescription = "History") },
                     label = { Text("History") }
@@ -100,6 +100,12 @@ fun MainApp() {
             )
             Screen.History -> HistoryScreen(
                 dao = dao,
+                onNavigateToDailyAverages = { currentScreen = Screen.DailyAverages },
+                modifier = Modifier.padding(innerPadding)
+            )
+            Screen.DailyAverages -> DailyAveragesScreen(
+                dao = dao,
+                onBack = { currentScreen = Screen.History },
                 modifier = Modifier.padding(innerPadding)
             )
         }
