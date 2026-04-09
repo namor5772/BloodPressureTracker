@@ -7,7 +7,7 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 ## Screens
 
 ### Record Screen
-<img src="screenshots/Screenshot_20260408_111835.png" alt="Record Screen" width="300">
+<img src="screenshots/Screenshot_20260409_110745.png" alt="Record Screen" width="300">
 
 - Enter **systolic** (mmHg), **diastolic** (mmHg), and optionally **pulse** (bpm)
 - Numeric-only keyboard input with digit filtering
@@ -16,6 +16,8 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 - Fields clear and keyboard dismisses after saving
 - Snackbar confirms each saved reading
 - Subtle heart graphic with "Stay Healthy" message below the form
+- Gear icon (next to title) to configure your Anthropic API key and custom instructions (both stored locally on device)
+- **Custom Instructions** (multi-line text field in settings) are appended to every AI explanation request, letting you personalise responses (e.g. "I am a 40-year-old male on medication X")
 
 ### History Screen
 <img src="screenshots/Screenshot_20260408_112014.png" alt="History Screen" width="300">
@@ -25,7 +27,6 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 - Tap any record to open action menu: **Explain** or **Delete**
 - **Explain this reading** sends the reading to the Anthropic API (Claude Haiku 4.5) for a plain-language explanation with AHA/ACC blood pressure categorisation and heart rate context
 - Delete with confirmation dialog
-- Gear icon (top-right) to enter your Anthropic API key (stored locally on device)
 - Empty state shown when no records exist
 
 ### Daily Averages Screen

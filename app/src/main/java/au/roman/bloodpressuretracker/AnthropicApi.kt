@@ -31,11 +31,13 @@ suspend fun getBloodPressureExplanation(
     apiKey: String,
     systolic: Int,
     diastolic: Int,
-    pulse: Int
+    pulse: Int,
+    customInstructions: String = ""
 ): Result<String> = withContext(Dispatchers.IO) {
     try {
         val pulseText = if (pulse > 0) "with a pulse of $pulse bpm" else "(pulse not recorded)"
-        val userMessage = "My blood pressure reading is $systolic/$diastolic mmHg $pulseText. What does this mean?"
+        val baseMessage = "My blood pressure reading is $systolic/$diastolic mmHg $pulseText. What does this mean?"
+        val userMessage = if (customInstructions.isNotBlank()) "$baseMessage\n\nAdditional instructions: $customInstructions" else baseMessage
 
         val body = JSONObject().apply {
             put("model", MODEL)
@@ -83,11 +85,13 @@ suspend fun getDailyAverageExplanation(
     apiKey: String,
     avgSystolic: Double,
     avgDiastolic: Double,
-    avgPulse: Double?
+    avgPulse: Double?,
+    customInstructions: String = ""
 ): Result<String> = withContext(Dispatchers.IO) {
     try {
         val pulseText = if (avgPulse != null) "with an average pulse of ${"%.1f".format(avgPulse)} bpm" else "(pulse not recorded)"
-        val userMessage = "My daily average blood pressure is ${"%.1f".format(avgSystolic)}/${"%.1f".format(avgDiastolic)} mmHg $pulseText. This is averaged across multiple readings taken on the same day. What does this mean?"
+        val baseMessage = "My daily average blood pressure is ${"%.1f".format(avgSystolic)}/${"%.1f".format(avgDiastolic)} mmHg $pulseText. This is averaged across multiple readings taken on the same day. What does this mean?"
+        val userMessage = if (customInstructions.isNotBlank()) "$baseMessage\n\nAdditional instructions: $customInstructions" else baseMessage
 
         val body = JSONObject().apply {
             put("model", MODEL)

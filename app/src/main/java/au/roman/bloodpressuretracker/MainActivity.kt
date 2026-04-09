@@ -5,11 +5,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +23,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -43,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -125,6 +131,7 @@ fun BloodPressureScreen(
     var diastolicText by remember { mutableStateOf("") }
     var pulseText by remember { mutableStateOf("") }
     var showApiKeyDialog by remember { mutableStateOf(false) }
+    var showHelpDialog by remember { mutableStateOf(false) }
 
     val systolic = systolicText.toIntOrNull()
     val diastolic = diastolicText.toIntOrNull()
@@ -132,33 +139,71 @@ fun BloodPressureScreen(
     val isValid = systolic != null && diastolic != null && (pulseText.isEmpty() || pulse != null)
 
     if (showApiKeyDialog) {
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
         var keyText by remember {
-            mutableStateOf(
-                context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                    .getString("anthropic_api_key", "") ?: ""
-            )
+            mutableStateOf(prefs.getString("anthropic_api_key", "") ?: "")
+        }
+        var customInstructions by remember {
+            mutableStateOf(prefs.getString("custom_instructions", "") ?: "")
         }
         AlertDialog(
             onDismissRequest = { showApiKeyDialog = false },
             title = { Text("Anthropic API Key") },
             text = {
-                OutlinedTextField(
-                    value = keyText,
-                    onValueChange = { keyText = it },
-                    label = { Text("API Key") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Column {
+                    OutlinedTextField(
+                        value = keyText,
+                        onValueChange = { keyText = it },
+                        label = { Text("API Key") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = customInstructions,
+                        onValueChange = { customInstructions = it },
+                        label = { Text("Custom Instructions") },
+                        minLines = 4,
+                        maxLines = 4,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             },
             confirmButton = {
                 TextButton(onClick = {
-                    context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                        .edit().putString("anthropic_api_key", keyText.trim()).apply()
+                    prefs.edit()
+                        .putString("anthropic_api_key", keyText.trim())
+                        .putString("custom_instructions", customInstructions.trim())
+                        .apply()
                     showApiKeyDialog = false
                 }) { Text("Save") }
             },
             dismissButton = {
                 TextButton(onClick = { showApiKeyDialog = false }) { Text("Cancel") }
+            }
+        )
+    }
+
+    if (showHelpDialog) {
+        AlertDialog(
+            onDismissRequest = { showHelpDialog = false },
+            title = { Text("Help") },
+            text = {
+                Text(
+                    "Record your blood pressure readings by entering systolic, " +
+                    "diastolic, and optionally pulse values, then tap Save.\n\n" +
+                    "View your readings on the History tab. Tap any reading to get an " +
+                    "AI-powered explanation or to delete it.\n\n" +
+                    "Use the gear icon to set your Anthropic API key (required for AI " +
+                    "explanations) and optional custom instructions that are included " +
+                    "with every AI request.\n\n" +
+                    "From the History screen you can export your data as CSV, a grouped " +
+                    "report, or daily averages. You can also import a previously exported " +
+                    "CSV file to restore readings."
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showHelpDialog = false }) { Text("OK") }
             }
         )
     }
@@ -181,6 +226,21 @@ fun BloodPressureScreen(
             )
             IconButton(onClick = { showApiKeyDialog = true }) {
                 Icon(Icons.Default.Settings, contentDescription = "API Key Settings")
+            }
+            IconButton(onClick = { showHelpDialog = true }) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .border(1.5.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
+                ) {
+                    Text(
+                        text = "?",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
 

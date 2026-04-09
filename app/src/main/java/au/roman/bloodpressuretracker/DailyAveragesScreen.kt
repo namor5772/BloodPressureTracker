@@ -93,14 +93,15 @@ fun DailyAveragesScreen(
     // Explanation API call
     LaunchedEffect(explanationAverage) {
         val avg = explanationAverage ?: return@LaunchedEffect
-        val apiKey = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-            .getString("anthropic_api_key", null)
+        val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val apiKey = prefs.getString("anthropic_api_key", null)
         if (apiKey.isNullOrBlank()) {
             explanationState = ExplanationState.Error("No API key set.\nTap the gear icon on the Record screen to add your Anthropic API key.")
             return@LaunchedEffect
         }
+        val customInstructions = prefs.getString("custom_instructions", "") ?: ""
         explanationState = ExplanationState.Loading
-        val result = getDailyAverageExplanation(apiKey, avg.avgSystolic, avg.avgDiastolic, avg.avgPulse)
+        val result = getDailyAverageExplanation(apiKey, avg.avgSystolic, avg.avgDiastolic, avg.avgPulse, customInstructions)
         explanationState = result.fold(
             onSuccess = { ExplanationState.Success(it) },
             onFailure = { ExplanationState.Error(it.message ?: "Unknown error") }

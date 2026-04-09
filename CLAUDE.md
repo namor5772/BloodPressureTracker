@@ -38,7 +38,7 @@ Blood Pressure Tracker — an Android app for manually recording blood pressure 
 - **Package**: `au.roman.bloodpressuretracker`
 - **Min/Target/Compile SDK**: 36 | **JVM Target**: Java 11
 - **Gradle**: 9.3.1 with Kotlin 2.2.10, AGP 9.1.0, KSP 2.3.2
-- **AI**: Anthropic Messages API (`claude-haiku-4-5-20251001`) via `HttpURLConnection` + `org.json` — API key stored in SharedPreferences
+- **AI**: Anthropic Messages API (`claude-haiku-4-5-20251001`) via `HttpURLConnection` + `org.json` — API key and custom instructions stored in SharedPreferences (`"settings"` → `"anthropic_api_key"`, `"custom_instructions"`); custom instructions are appended to the user message on each API call
 - **Dependency management**: Version catalog (`gradle/libs.versions.toml`)
 
 ## Key Paths
