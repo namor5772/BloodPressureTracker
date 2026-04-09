@@ -18,6 +18,7 @@ THE BEST WAY TO INSTALL THIS APP IS TO CLONE THIS REPO INTO A PROJECT DIRECTORY 
 - Subtle heart graphic with "Stay Healthy" message below the form
 - Gear icon (next to title) to configure your Anthropic API key and custom instructions (both stored locally on device)
 - **Custom Instructions** (multi-line text field in settings) are appended to every AI explanation request, letting you personalise responses (e.g. "I am a 40-year-old male on medication X")
+- **Help button** (circled "?" icon next to the gear) shows a quick-reference guide explaining how to record readings, use AI explanations, configure settings, and export/import data
 
 ### History Screen
 <img src="screenshots/Screenshot_20260408_112014.png" alt="History Screen" width="300">
@@ -79,7 +80,7 @@ Import a previously exported CSV file to restore or transfer readings. Opens a f
 | Database | Room 2.7.1 (SQLite) |
 | Architecture | Single Activity, state-based navigation |
 | Min SDK | 36 |
-| Build | Gradle 9.3.1, AGP 9.1.0 |
+| Build | Gradle 9.3.1, AGP 9.0.1 |
 
 ## Building
 
